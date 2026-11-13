@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10131a">
+  <meta name="description" content="Um karaokê para entender filas: adicione pedidos, acompanhe a ordem FIFO e veja as operações acontecerem no código.">
+  <title>Vez da Voz — Fila de Karaokê</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23baf49c'/%3E%3Ctext x='16' y='47' font-size='44'%3E♪%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="conceitos.css">
+  <link rel="stylesheet" href="previas.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="header">
+      <a href="./" class="brand" aria-label="Vez da Voz, início"><span class="brand-icon" aria-hidden="true">♪</span>vez da voz<span class="brand-dot">.</span></a>
+      <span class="header-note">ALGORITMOS <span>/</span> PILHAS & FILAS</span>
+      <a class="download-link" href="downloads/vez-da-voz-projeto.zip" download><span aria-hidden="true">↙</span> Baixar projeto</a>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div><div class="eyebrow"><span class="tiny-dot"></span> LABORATÓRIO DE ESTRUTURAS DE DADOS</div><h1 id="page-title">Sua música.<br> Sua <em>vez.</em></h1><p>Quem pede primeiro, canta primeiro.<br> Um karaokê para ver a fila FIFO acontecer.</p></div>
+        <div class="intro-aside"><span class="outline-star" aria-hidden="true">✳</span><div><span class="mono">FIRST IN, FIRST OUT</span><p>A ordem faz o show.</p></div></div>
+      </section>
+
+      <nav class="tabs" aria-label="Seções do projeto">
+        <button class="tab active" data-tab="live" aria-current="page"><span aria-hidden="true">◉</span> Karaokê ao vivo</button>
+        <button class="tab" data-tab="code"><span aria-hidden="true">&lt;/&gt;</span> Por dentro da fila</button>
+        <button class="tab" data-tab="guide"><span aria-hidden="true">↗</span> Guia da apresentação</button>
+        <span class="tabs-tail">UMA FILA. NENHUM FURA-FILA.</span>
+      </nav>
+
+      <section id="panel-live" class="tab-panel" aria-label="Demonstração ao vivo">
+        <div class="top-grid">
+          <section class="stage" aria-labelledby="stage-heading">
+            <div class="stage-top"><span id="stage-status" class="stage-label"><span class="tiny-dot"></span> PALCO LIVRE</span><span class="stage-number">01 / O PALCO</span></div>
+            <div class="stage-content"><div class="stage-copy"><p id="stage-kicker" class="stage-kicker">O microfone está esperando</p><h2 id="stage-heading">Pode chamar<br>o próximo.</h2><p id="stage-detail" class="stage-detail">A primeira pessoa da fila é a próxima a cantar.</p></div><div id="record" class="record" aria-hidden="true"><div class="record-label"><span>VEZ<br>DA VOZ</span><i></i><small>LADO A • FIFO</small></div><span class="tonearm"></span></div></div>
+            <div id="stage-audio" class="stage-audio" hidden><div class="stage-audio-top"><p id="stage-audio-status" role="status" aria-live="polite">Preparando a música…</p><output id="stage-audio-clock">00 / 15 s</output></div><progress id="stage-audio-progress" max="15" value="0" aria-label="Progresso da música no palco"></progress><p id="stage-audio-title" class="stage-audio-title"></p><div class="stage-audio-source"><a id="stage-store" class="stage-store" target="_blank" rel="noopener noreferrer" hidden><img src="assets/itunes-badge.png" alt="Conheça a gravação do palco na iTunes Store" height="30"></a><p id="stage-audio-credit"></p></div></div>
+            <div class="stage-bottom"><button id="call-next" class="button button-dark"><span aria-hidden="true">▶</span> Chamar próximo <span aria-hidden="true">↗</span></button><button id="stage-pause" class="button button-dark" hidden disabled>Carregando áudio…</button><button id="finish" class="finish-button" title="Encerrar e chamar o próximo pedido" hidden>Encerrar apresentação <span aria-hidden="true">→</span></button><button id="stage-preview" class="finish-button" hidden>Escolher áudio</button><span id="stage-hint" class="stage-hint">Sai do início → entra no palco e toca</span></div>
+          </section>
+
+          <section class="request-card" aria-labelledby="request-heading"><div class="section-kicker">02 / UM NOVO PEDIDO</div><h2 id="request-heading">Solta a voz.</h2><p>Escolha a música. A gente guarda seu lugar.</p>
+            <form id="request-form">
+              <label for="singer">Quem vai cantar?</label><input id="singer" name="cantor" placeholder="Seu nome ou apelido" required maxlength="80" autocomplete="off">
+              <div class="form-grid"><div><label for="song">Música</label><input id="song" name="musica" placeholder="Nome da música" required maxlength="80" autocomplete="off"></div><div><label for="artist">Artista</label><input id="artist" name="artista" placeholder="Banda ou artista" required maxlength="80" autocomplete="off"></div></div>
+              <button class="button button-lime" type="submit">Entrar na fila <span aria-hidden="true">＋</span></button>
+            </form>
+            <span class="form-note"><span aria-hidden="true">↳</span> Seu pedido entra sempre no final da fila.</span><span class="form-note">♪ Escreva música e artista para encontrar uma prévia de 15 s.</span>
+          </section>
+        </div>
+
+        <div class="bottom-grid">
+          <section class="queue-card" aria-labelledby="queue-heading"><div class="queue-header"><div><div class="section-kicker">03 / NA ORDEM CERTA</div><h2 id="queue-heading">Na espera <span id="queue-count" class="count">3</span></h2></div><button id="peek" class="text-button">Consultar próximo <span aria-hidden="true">↗</span></button></div>
+            <div class="queue-direction"><span><i class="tiny-dot"></i> INÍCIO <b>→ próximo a sair</b></span><span>novos pedidos entram no <b>FIM ↓</b></span></div>
+            <ol id="queue-list" class="queue-list" aria-label="Pedidos na ordem de chegada"></ol>
+            <div class="queue-tools"><button id="examples" class="text-button">＋ Carregar exemplo</button><button id="reset" class="text-button muted">Limpar demonstração</button></div>
+          </section>
+
+          <aside class="activity-card" aria-labelledby="activity-heading"><div class="activity-title"><div class="section-kicker">04 / A ESTRUTURA EM AÇÃO</div><span class="live-pill">FIFO</span></div><h2 id="activity-heading">Nos bastidores.</h2><div class="metrics"><div><strong id="waiting-total">3</strong><span>na fila</span></div><div><strong id="done-total">0</strong><span>concluídas</span></div><div><strong id="operation-total">3</strong><span>operações</span></div></div><div class="log-heading"><span>REGISTRO DE OPERAÇÕES</span><span aria-hidden="true">↓</span></div><ol id="operation-log" class="operation-log" aria-label="Registro de operações, da mais recente à mais antiga"></ol><p class="activity-note">Adicionar = <code>enqueue</code><br>Chamar = <code>dequeue</code> · Consultar = <code>peek</code></p></aside>
+        </div>
+        <div class="principle"><span class="principle-icon" aria-hidden="true">↳</span><p><strong>Justo por definição.</strong> Um pedido novo nunca passa à frente de quem já estava esperando.</p><button class="text-button" data-open="code">Entenda o FIFO <span aria-hidden="true">→</span></button></div>
+      </section>
+
+      <section id="panel-code" class="tab-panel educational" hidden aria-labelledby="code-heading">
+        <div class="educational-title"><span class="section-kicker">DO PROBLEMA REAL AO ALGORITMO</span><h2 id="code-heading">A fila organiza a vez.</h2><p>Vários pedidos chegam, mas só uma pessoa pode cantar por vez. A fila guarda os pedidos que esperam e permite ao organizador atender na ordem de chegada.</p></div>
+        <div class="fifo-rule"><span class="live-pill">FIFO</span><div><h3>Primeiro a entrar, primeiro a sair.</h3><p>Se Ana pediu antes de Bruno e os dois ainda esperam, o pedido de Ana deve sair da fila primeiro. Inserir no fim e retirar pelo início mantém essa regra em cada operação.</p></div></div>
+        <div class="concept-grid"><article><span class="concept-number">01 / CHEGOU UM PEDIDO</span><h3>Guardar no fim</h3><p>O novo pedido entra depois de todos os que já aguardam. A chegada dele não muda a vez de ninguém.</p><b>INSERIR · ENQUEUE</b></article><article><span class="concept-number">02 / O PALCO ESTÁ LIVRE</span><h3>Chamar pelo início</h3><p>O organizador retira o pedido que espera há mais tempo e o transfere para o palco. O seguinte passa a ser o primeiro.</p><b>REMOVER · DEQUEUE</b></article><article><span class="concept-number">03 / QUEM VEM DEPOIS?</span><h3>Consultar sem tirar</h3><p>O organizador anuncia quem deve se preparar. A consulta não atende o pedido, não muda a ordem e não diminui a fila.</p><b>CONSULTAR · PEEK</b></article></div>
+        <section class="algorithm-walk" aria-labelledby="walk-heading"><div class="walk-header"><div><span class="section-kicker">ACOMPANHE UMA SEQUÊNCIA COMPLETA</span><h3 id="walk-heading">Do pedido ao palco.</h3></div><span id="walk-counter" class="mono"></span></div><p class="walk-note">Exemplo guiado independente do karaokê ao vivo. Avance uma operação por vez e observe o que muda.</p><div class="walk-body"><div class="walk-story" aria-live="polite" aria-atomic="true"><span id="walk-operation" class="section-kicker"></span><h4 id="walk-title"></h4><p id="walk-context"></p><div class="walk-reasoning"><strong>O raciocínio do algoritmo</strong><p id="walk-reasoning"></p></div></div><div class="walk-visual"><div class="walk-snapshots"><section class="snapshot"><h4>ANTES</h4><div id="walk-before"></div></section><section class="snapshot after"><h4>DEPOIS</h4><div id="walk-after"></div></section></div><div class="walk-c"><span class="section-kicker">ESTA OPERAÇÃO, REPRESENTADA EM C</span><pre id="walk-code" tabindex="0" aria-label="Trecho C da operação"></pre><p><code>ana</code>, <code>bruno</code> e <code>carla</code> representam pedidos já preenchidos. O trecho mostra a chamada relevante, não um programa isolado.</p></div></div></div><p id="walk-conclusion" class="walk-conclusion"></p><div class="walk-controls"><button id="walk-prev" class="button button-secondary">← Passo anterior</button><button id="walk-reset" class="text-button">Recomeçar exemplo</button><button id="walk-next" class="button button-lime">Próximo passo →</button></div></section>
+        <section class="algorithm-core" aria-labelledby="core-heading"><div class="educational-title"><span class="section-kicker">O MECANISMO QUE PRESERVA FIFO</span><h3 id="core-heading">A regra virando algoritmo.</h3><p>Estes recortes de <code>fila.c</code> mostram a decisão essencial: ligar pelo fim e avançar pelo início.</p></div><div class="core-grid"><article><h4>Para inserir: manter quem já espera.</h4><ol><li>Preparar um novo nó com o pedido.</li><li>Se a fila está vazia, ele também será o início.</li><li>Caso contrário, ligar o último nó ao novo.</li><li>Atualizar o fim e aumentar a quantidade.</li></ol><pre tabindex="0"><code>if (estaVazia(fila)) {
+        fila-&gt;inicio = novo;
+    } else {
+        fila-&gt;fim-&gt;proximo = novo;
+    }
+
+    fila-&gt;fim = novo;</code></pre><p>No recorte, <code>novo</code> já contém o pedido. A inserção aumenta <code>tamanho</code> na sequência. O início de uma fila não vazia permanece igual.</p></article><article><h4>Para remover: atender quem chegou antes.</h4><ol><li>Se a fila está vazia, avisar e não remover.</li><li>Guardar o pedido apontado pelo início.</li><li>Mover o início para o próximo nó.</li><li>Se esvaziou, zerar também o fim; liberar o nó antigo.</li></ol><pre tabindex="0"><code>No *removido = fila-&gt;inicio;
+    *pedido = removido-&gt;valor;
+    fila-&gt;inicio = removido-&gt;proximo;
+    fila-&gt;tamanho--;
+
+    if (estaVazia(fila)) fila-&gt;fim = NULL;</code></pre><p>O teste de fila vazia vem antes deste recorte, e <code>free(removido)</code> vem depois. O pedido copiado é devolvido para o organizador colocar no palco.</p></article></div><p class="core-cost">Como início e fim já são conhecidos, inserir e remover não exigem percorrer a fila: são O(1) nesta implementação encadeada. Mostrar todos os pedidos na tela exige percorrê-los e custa O(n).</p></section>
+        <section class="guide-block mapping-block"><h3>O algoritmo liga a estrutura ao problema.</h3><p>A fila define a ordem de espera. O programa decide quando inserir, consultar e remover um pedido.</p><div class="table-scroll"><table><thead><tr><th>Situação no karaokê</th><th>Decisão do algoritmo</th><th>O que muda</th></tr></thead><tbody><tr><td>Alguém pede uma música</td><td>Validar e enfileirar no fim</td><td>Um pedido a mais na espera</td></tr><tr><td>Organizador anuncia o próximo</td><td>Consultar o início</td><td>Nenhum pedido sai da fila</td></tr><tr><td>Palco livre e próximo chamado</td><td>Desenfileirar e guardar em atual</td><td>Um a menos na espera; um no palco</td></tr><tr><td>Clicar em Encerrar apresentação</td><td>Concluir o atual e desenfileirar o próximo</td><td>A música seguinte começa; se não há pedidos, o palco fica livre</td></tr></tbody></table></div></section>
+        <div class="guide-bottom"><article class="guide-block"><h3>Por que FIFO resolve esse problema?</h3><p>O critério escolhido é atender por ordem de chegada. Guardar no fim e retirar pelo início preserva esse critério sem precisar reordenar todos os pedidos a cada chamada.</p><p>Uma pilha faria o último pedido chegar ao palco primeiro. Uma lista ordenada por artista ou música também mudaria a regra de atendimento.</p><p>C é a linguagem usada para expressar as operações. A mesma ideia de fila pode ser implementada em outras linguagens e aplicada a senhas de atendimento, impressão e processamento de tarefas.</p></article><article class="guide-block"><h3>As situações que o algoritmo precisa tratar.</h3><p><strong>Fila vazia:</strong> não existe próximo pedido; o organizador recebe um aviso e ninguém é chamado.</p><p><strong>Palco ocupado:</strong> o programa bloqueia outra chamada até a apresentação terminar. Essa é uma regra do karaokê, separada da ordem FIFO.</p><p><strong>Pedidos repetidos:</strong> cada pedido ocupa uma posição própria. A fila atende pedidos por chegada; não faz rodízio entre participantes.</p></article></div>
+        <section class="pointer-demo"><div class="section-kicker">CONECTE COM A DEMONSTRAÇÃO AO VIVO</div><h3>A espera que você montou.</h3><div id="pointer-nodes" class="pointer-nodes"></div><p>Este retrato acompanha seus pedidos da aba Karaokê ao vivo. O pedido que está no palco já saiu desta fila de espera.</p><button class="text-button" data-open="live">Experimentar no karaokê →</button></section>
+        <details id="implementation-details" class="implementation-details"><summary>Consultar implementação completa em C e instruções de execução <span aria-hidden="true">＋</span></summary>
+        <div class="code-grid"><article class="code-card"><div class="code-top"><h3>Código completo para consulta</h3><span id="source-filename">codigo-c/fila.c</span></div><p>Estes são os arquivos C completos incluídos no projeto para baixar, compilar e executar no terminal. A interface visual do navegador simula as mesmas regras em JavaScript.</p><div class="source-files" role="group" aria-label="Arquivos do projeto em C"><button class="source-file" data-source="fila.h" aria-pressed="false">fila.h</button><button class="source-file active" data-source="fila.c" aria-pressed="true">fila.c</button><button class="source-file" data-source="main.c" aria-pressed="false">main.c</button><a id="source-download" href="codigo-c/fila.c" download>Baixar arquivo <span aria-hidden="true">↙</span></a></div><pre id="source-code" tabindex="0" aria-label="Código-fonte em C"><code>Carregando implementação em C…</code></pre><div class="compile-guide"><h3>Compile e rode</h3><p>Extraia o projeto e execute na pasta principal, com GCC instalado:</p><pre tabindex="0"><code>gcc -std=c11 -Wall -Wextra -pedantic dist/codigo-c/fila.c dist/codigo-c/main.c -o karaoke
+./karaoke</code></pre><p>No Windows, use <code>gcc</code> com MinGW e depois <code>.\karaoke.exe</code>. O menu começa com a fila vazia.</p></div></article><article class="explain-card"><span class="section-kicker">COMO LER O PROJETO</span><h3>Onde está a regra FIFO?</h3><p>Em <code>fila.c</code>, procure a inserção no fim e a remoção no início. São essas escolhas do algoritmo que preservam a ordem dos pedidos.</p><h3>O que representa cada item?</h3><p><code>Pedido</code> guarda participante, música e artista. Um nó liga esse pedido ao seguinte; <code>inicio</code> e <code>fim</code> marcam as extremidades.</p><h3>Onde o problema usa a estrutura?</h3><p>Em <code>main.c</code>, adicionar chama <code>enfileirar</code>, anunciar usa <code>consultarInicio</code> e chamar ao palco usa <code>desenfileirar</code>.</p><h3>O que é detalhe da implementação?</h3><p>Os nós são alocados com <code>malloc</code> e liberados com <code>free</code>. Outra implementação poderia guardar os pedidos de outro modo e continuar sendo FIFO, desde que preserve a mesma ordem de entrada e saída.</p></article></div>
+        </details>
+      </section>
+
+      <section id="panel-guide" class="tab-panel educational" hidden aria-labelledby="guide-heading"><div class="educational-title"><span class="section-kicker">EP DE ALGORITMOS / SENAC</span><h2 id="guide-heading">O show de vocês.</h2><p>Apresentem o problema, justifiquem a fila e mostrem o algoritmo em ação. Usem os trechos em C para ligar cada decisão ao que acontece no karaokê.</p></div>
+        <div class="concept-grid guide-timing"><article><span class="concept-number">03 min</span><h3>O problema</h3><p>Um karaokê precisa organizar pedidos com justiça. Apresentem o FIFO, os dados de cada pedido e por que uma pilha inverteria a ordem.</p></article><article><span class="concept-number">05 min</span><h3>Demonstração</h3><p>Prevejam a ordem, acompanhem o exemplo passo a passo e testem no karaokê. Relacionem cada ação a inserir, consultar ou remover e mostrem o trecho correspondente em C.</p></article><article><span class="concept-number">07 min</span><h3>Perguntas</h3><p>Expliquem por que FIFO preserva a chegada, por que consultar não remove e como o algoritmo trata fila vazia, palco ocupado e pedidos repetidos.</p></article></div>
+        <section class="guide-block"><h3>Antes de clicar, prevejam.</h3><p>Usem “Limpar demonstração” e façam esta sequência. Confiram a previsão com a tela.</p><div class="table-scroll"><table><thead><tr><th>Operação</th><th>Fila esperada</th><th>Palco</th></tr></thead><tbody><tr><td>1. Adicionar Ana</td><td>Ana</td><td>Livre</td></tr><tr><td>2. Adicionar Bruno</td><td>Ana → Bruno</td><td>Livre</td></tr><tr><td>3. Consultar próximo</td><td>Ana → Bruno</td><td>Livre (consulta retorna Ana)</td></tr><tr><td>4. Chamar próximo</td><td>Bruno</td><td>Ana</td></tr><tr><td>5. Adicionar Carla</td><td>Bruno → Carla</td><td>Ana</td></tr></tbody></table></div></section>
+        <div class="guide-bottom"><article class="guide-block"><h3>O que vocês entregam</h3><ul><li>Esta demonstração funcional, com instruções.</li><li>Programa em C para terminal, código-fonte e testes.</li><li>Diário cronológico das decisões e testes.</li><li>Exportação integral da conversa com IA.</li></ul><a class="button button-lime" href="downloads/vez-da-voz-projeto.zip" download>Baixar projeto com código em C <span aria-hidden="true">↙</span></a></article><article class="guide-block"><h3>Escopo da demonstração</h3><p>Este projeto simula o fluxo de pedidos e permite conhecer gravações por prévias de até 15 segundos. A busca usa o título e o artista no catálogo iTunes, conforme disponibilidade. Também é possível associar um áudio do dispositivo a cada pedido, sem enviá-lo ao site.</p><p>O código apresentado está em C e pode ser compilado para terminal. A demonstração visual usa JavaScript no navegador. Em ambos, os dados ficam em memória durante a sessão.</p><p>No navegador, recarregar restaura o exemplo inicial. No terminal, o programa começa com a fila vazia. Não há sincronização entre as duas versões.</p><p><strong>Data do EP:</strong> 13/11/2026 · Grupos de 2 a 4 integrantes · 15 minutos por grupo.</p><p>O diário registra o que foi feito aqui; o grupo deve anexar a conversa completa e as próximas iterações.</p></article></div>
+      </section>
+    </main>
+    <footer><a href="./" class="footer-brand">vez da voz.</a><span>UM PALCO PARA ENTENDER FIFO.</span><span>Prévias de até 15 segundos · conforme disponibilidade</span></footer>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+  <dialog id="reset-dialog" aria-labelledby="reset-heading"><form method="dialog"><span class="section-kicker">RECOMEÇAR A DEMONSTRAÇÃO</span><h2 id="reset-heading">Deixar o palco zerado?</h2><p>Isso limpa a fila, o palco e o registro desta sessão. Depois, você pode carregar o exemplo novamente.</p><div class="dialog-actions"><button value="cancel" class="button button-secondary" autofocus>Voltar</button><button value="confirm" class="button button-lime">Sim, limpar</button></div></form></dialog>
+  <dialog id="preview-dialog" class="preview-dialog" aria-labelledby="preview-title">
+    <div class="preview-dialog-top"><span class="section-kicker">CONHEÇA A GRAVAÇÃO / PRÉVIA DE ATÉ 15 S</span><button id="preview-close" class="preview-close" aria-label="Fechar prévia" type="button" autofocus>×</button></div>
+    <h2 id="preview-title">Prévia da música</h2><p id="preview-request-artist" class="preview-request-artist"></p>
+    <p class="preview-explanation">Escolha a gravação que será usada no palco. Ouvir esta amostra não muda a fila; Chamar próximo inicia a apresentação com esse áudio.</p>
+    <section id="preview-selected" class="preview-selected" aria-label="Prévia selecionada" hidden>
+      <span class="section-kicker">GRAVAÇÃO SELECIONADA</span><h3 id="preview-selected-title"></h3><p id="preview-selected-artist"></p>
+      <div class="preview-player"><button id="preview-toggle" class="button button-lime" type="button">▶ Ouvir 15 s</button><button id="preview-stop" class="preview-track-button" type="button">■ Parar</button><output id="preview-clock">00 / 15 s</output></div>
+      <progress id="preview-progress" max="15" value="0" aria-label="Progresso da prévia"></progress><p id="preview-play-status" role="status" aria-live="polite"></p>
+      <a id="preview-store" class="preview-store" target="_blank" rel="noopener noreferrer" hidden><img src="assets/itunes-badge.png" alt="Conheça esta gravação na iTunes Store" height="40"></a><p id="preview-credit" class="preview-credit"></p>
+    </section>
+    <p id="preview-search-status" class="preview-search-status" role="status" aria-live="polite"></p>
+    <ul id="preview-results" class="preview-results" aria-label="Gravações encontradas no catálogo"></ul><button id="preview-retry" class="text-button" type="button" hidden>Tentar buscar novamente ↗</button>
+    <div class="preview-local"><label class="preview-file-button" for="preview-file">＋ Escolher áudio do dispositivo<input id="preview-file" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus"></label><p>Se a prévia não estiver no catálogo, associe um áudio a este pedido. O arquivo fica nesta aba, sem envio ao site.</p></div>
+    <audio id="preview-audio" preload="none"></audio>
+  </dialog>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
